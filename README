@@ -1,0 +1,22 @@
+# Agile Poker Board - Playwright Test Suite
+
+End-to-end tests for agilepokerboard
+
+## Prerequisites
+- Node.js 18+
+
+## Running Tests
+```bash
+npx playwright test     # all tests
+npx playwright test tests/login.spec.ts # one file
+npx playwright test --headed=chromium   # one browser
+npx playwright tests --headed   # watch it run
+npx playwright test --ui    # interactive UI mode
+npx playwright test --debug    #step-through debugger
+npx playwright test --grep @smoke   # tagged subset
+```
+
+## Reports and Artifacts
+```bash
+npx playwright show-report
+```
