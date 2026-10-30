@@ -1,4 +1,4 @@
-![Agile Poker Board logo](assets/logo.png)
+![Agile Poker Board logo](assets/AgilePokerBoardLogo.jpg)
 
 # Agile Poker Board - Playwright Test Suite
 
