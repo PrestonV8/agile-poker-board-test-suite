@@ -7,13 +7,13 @@ End-to-end tests for agilepokerboard
 
 ## Running Tests
 ```bash
-npx playwright test     # all tests
-npx playwright test tests/login.spec.ts # one file
-npx playwright test --headed=chromium   # one browser
-npx playwright tests --headed   # watch it run
-npx playwright test --ui    # interactive UI mode
-npx playwright test --debug    #step-through debugger
-npx playwright test --grep @smoke   # tagged subset
+npx playwright test                           # all tests
+npx playwright test tests/login.spec.ts       # one file
+npx playwright test --project=chromium        # one browser
+npx playwright test --headed                  # watch it run
+npx playwright test --ui                      # interactive UI mode
+npx playwright test --debug                   # step-through debugger
+npx playwright test --grep @smoke             # tagged subset
 ```
 
 ## Reports and Artifacts
