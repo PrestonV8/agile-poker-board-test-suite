@@ -1,3 +1,5 @@
+![Agile Poker Board logo](assets/logo.png)
+
 # Agile Poker Board - Playwright Test Suite
 
 End-to-end tests for agilepokerboard
