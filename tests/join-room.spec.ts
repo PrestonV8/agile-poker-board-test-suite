@@ -3,15 +3,19 @@ import { test, expect} from '@playwright/test';
 test.describe('Join Room (R2)', () => {
 
     const BASEURL = 'https://agilepokerboard.com/';
-    const ROOMNAME = `Join Room Test Environment ${Date.now()}`;
+
+    let roomName: string;
+    let roomCreated: boolean;
     
     // For each test, initiate a room as a test environment to test the join room functionality. 
-    test.beforeEach(async ({page}) => {
+    test.beforeEach(async ({page}, testInfo) => {
+        roomCreated = false;
+        roomName = `Join Room Test  ${testInfo.parallelIndex}-${Date.now()}`;
         const userName = "John Doe";
         
         await page.goto(BASEURL);
     
-        await page.getByLabel('Room Name').fill(ROOMNAME);
+        await page.getByLabel('Room Name').fill(roomName);
         await page.getByLabel('Your display name').fill(userName);
 
         const question = page.locator('.captcha-question');
@@ -24,19 +28,33 @@ test.describe('Join Room (R2)', () => {
         await expect(page.getByRole('button', {name: 'Create room'})).toBeEnabled();
 
         await page.getByRole('button', {name: 'Create room'}).click();
-        await expect(page.getByRole('heading', {name: ROOMNAME})).toBeVisible();
+        await expect(page.getByRole('heading', {name: roomName})).toBeVisible();
+        
+        roomCreated = true;
     });
 
     // After each test, close the room to not exceed the limit of total available rooms
     test.afterEach(async ({page}) => {
-        await page.getByRole('button', {name: 'Room settings'}).click();
-        await page.getByRole('button', {name: 'Close this room'}).click();
-        await page.getByRole('button', {name: 'Close room'}).click();
+        if (roomCreated == false) 
+        {
+            return;
+        }
+
+        try 
+        {
+            await page.getByRole('button', {name: 'Room settings'}).click();
+            await page.getByRole('button', {name: 'Close this room'}).click();
+            await page.getByRole('button', {name: 'Close room'}).click();
+        } catch (error) 
+        {
+            console.warn(`Cleanup failed. Room may still be open: "${roomName}"`, error);
+        }
+        
 
         await expect(page).toHaveURL(BASEURL);
 
         // verify the room is actually gone from the lobby
-        await expect(page.locator('article.room-row').filter({hasText: ROOMNAME})).toHaveCount(0);
+        await expect(page.locator('article.room-row').filter({hasText: roomName})).toHaveCount(0);
     });
 
     test('Member can successfully join a room with valid names', async ({ browser }) => {
@@ -51,7 +69,7 @@ test.describe('Join Room (R2)', () => {
 
             const room = memberPage
                 .locator('article.room-row')
-                .filter({ hasText: ROOMNAME });
+                .filter({ hasText: roomName });
 
             await expect(room).toHaveCount(1);
 
