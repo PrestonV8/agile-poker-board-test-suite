@@ -3,7 +3,7 @@ import { test, expect} from '@playwright/test';
 test.describe('Join Room (R2)', () => {
 
     const BASEURL = 'https://agilepokerboard.com/';
-    const ROOMNAME = "Join Room Test Environment Room";
+    const ROOMNAME = `Join Room Test Environment ${Date.now()}`;
     
     // For each test, initiate a room as a test environment to test the join room functionality. 
     test.beforeEach(async ({page}) => {
@@ -60,10 +60,14 @@ test.describe('Join Room (R2)', () => {
             await expect(memberPage).toHaveURL(/\/r\/[a-z0-9]+/);
 
             // If a name prompt appears before entering, fill it here, e.g.:
-            await memberPage.getByLabel('Your display name').fill(memberName);
-            await memberPage.getByRole('button', { name: 'Join' }).click();
+            await memberPage.getByRole('button', { name: 'Reject optional' }).click();
 
-            await expect(memberPage.getByRole('heading', { name: ROOMNAME })).toBeVisible();
+            const nameInput = memberPage.getByLabel('Your display name');
+            await nameInput.fill(memberName);
+            await expect(nameInput).toHaveValue(memberName);
+
+            await memberPage.getByRole('button', { name: 'Join room' }).click();
+            await expect(memberPage.getByRole('heading', { name: 'Take a seat.' })).toBeHidden();
         } finally {
             await memberContext.close();
         }
