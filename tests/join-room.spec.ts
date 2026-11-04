@@ -125,4 +125,72 @@ test.describe('Join Room (R2)', () => {
         }
     });
 
+    test('Member can successfully join a room with numbers in names', async ({ browser }) => {
+        const memberName = 'Kevin Kyle 1234567890';
+
+        // Separate context = separate session, like a different person
+        const memberContext = await browser.newContext();
+        const memberPage = await memberContext.newPage();
+
+        try {
+            await memberPage.goto(BASEURL);
+
+            const room = memberPage
+                .locator('article.room-row')
+                .filter({ hasText: roomName });
+
+            await expect(room).toHaveCount(1);
+
+            // It's an <a>, so use role "link"
+            await room.getByRole('link', { name: 'Join room' }).click();
+            await expect(memberPage).toHaveURL(/\/r\/[a-z0-9]+/);
+
+            // If a name prompt appears before entering, fill it here, e.g.:
+            await memberPage.getByRole('button', { name: 'Reject optional' }).click();
+
+            const nameInput = memberPage.getByLabel('Your display name');
+            await nameInput.fill(memberName);
+            await expect(nameInput).toHaveValue(memberName);
+
+            await memberPage.getByRole('button', { name: 'Join room' }).click();
+            await expect(memberPage.getByRole('heading', { name: 'Take a seat.' })).toBeHidden();
+        } finally {
+            await memberContext.close();
+        }
+    });
+
+        test('Member can successfully join a room with numbers and special characters in names', async ({ browser }) => {
+        const memberName = 'Kevin Kyle 1234567890!@##$$%^&*()_+';
+
+        // Separate context = separate session, like a different person
+        const memberContext = await browser.newContext();
+        const memberPage = await memberContext.newPage();
+
+        try {
+            await memberPage.goto(BASEURL);
+
+            const room = memberPage
+                .locator('article.room-row')
+                .filter({ hasText: roomName });
+
+            await expect(room).toHaveCount(1);
+
+            // It's an <a>, so use role "link"
+            await room.getByRole('link', { name: 'Join room' }).click();
+            await expect(memberPage).toHaveURL(/\/r\/[a-z0-9]+/);
+
+            // If a name prompt appears before entering, fill it here, e.g.:
+            await memberPage.getByRole('button', { name: 'Reject optional' }).click();
+
+            const nameInput = memberPage.getByLabel('Your display name');
+            await nameInput.fill(memberName);
+            await expect(nameInput).toHaveValue(memberName);
+
+            await memberPage.getByRole('button', { name: 'Join room' }).click();
+            await expect(memberPage.getByRole('heading', { name: 'Take a seat.' })).toBeHidden();
+        } finally {
+            await memberContext.close();
+        }
+    });
+
 });
