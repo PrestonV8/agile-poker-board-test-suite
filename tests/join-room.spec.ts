@@ -74,7 +74,7 @@ test.describe('Join Room (R2)', () => {
             await expect(room).toHaveCount(1);
 
             // It's an <a>, so use role "link"
-            await room.getByRole('link', { name: 'Join room', exact: true }).click();
+            await room.getByRole('link', { name: 'Join room' }).click();
             await expect(memberPage).toHaveURL(/\/r\/[a-z0-9]+/);
 
             // If a name prompt appears before entering, fill it here, e.g.:
@@ -84,7 +84,7 @@ test.describe('Join Room (R2)', () => {
             await nameInput.fill(memberName);
             await expect(nameInput).toHaveValue(memberName);
 
-            await memberPage.getByRole('button', { name: 'Join room', exact: true }).click();
+            await memberPage.getByRole('button', { name: 'Join room' }).click();
             await expect(memberPage.getByRole('heading', { name: 'Take a seat.' })).toBeHidden();
         } finally {
             await memberContext.close();
@@ -108,7 +108,7 @@ test.describe('Join Room (R2)', () => {
             await expect(room).toHaveCount(1);
 
             // It's an <a>, so use role "link"
-            await room.getByRole('link', { name: 'Join room', exact: true }).click();
+            await room.getByRole('link', { name: 'Join room' }).click();
             await expect(memberPage).toHaveURL(/\/r\/[a-z0-9]+/);
 
             // If a name prompt appears before entering, fill it here, e.g.:
@@ -118,7 +118,7 @@ test.describe('Join Room (R2)', () => {
             await nameInput.fill(memberName);
             await expect(nameInput).toHaveValue(memberName);
 
-            await memberPage.getByRole('button', { name: 'Join room', exact: true }).click();
+            await memberPage.getByRole('button', { name: 'Join room' }).click();
             await expect(memberPage.getByRole('heading', { name: 'Take a seat.' })).toBeHidden();
         } finally {
             await memberContext.close();
