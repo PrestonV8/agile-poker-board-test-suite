@@ -1,6 +1,6 @@
 import { test, expect} from '@playwright/test';
 
-test.describe('Join Room (R2)', () => {
+test.describe('Join Room (R17)', () => {
 
     const BASEURL = 'https://agilepokerboard.com/';
 
