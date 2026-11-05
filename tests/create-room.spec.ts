@@ -159,7 +159,9 @@ test.describe('Create Room (R3)', () => {
         await page.getByRole('button', {name: 'Create room'}).click();
         
         // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
+        await expect(page.locator('.room-top').getByRole('heading', { name: roomName, exact: true })).toBeVisible();
+        // or by level
+        await expect(page.getByRole('heading', { level: 1, name: roomName, exact: true })).toBeVisible();
 
         // will need to close the room to not exceed the limit of total available rooms on site
         await page.getByRole('button', {name: 'Room settings'}).click();
@@ -189,7 +191,9 @@ test.describe('Create Room (R3)', () => {
         await page.getByRole('button', {name: 'Create room'}).click();
         
         // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
+        await expect(page.locator('.room-top').getByRole('heading', { name: roomName, exact: true })).toBeVisible();
+        // or by level
+        await expect(page.getByRole('heading', { level: 1, name: roomName, exact: true })).toBeVisible();
 
         // will need to close the room to not exceed the limit of total available rooms on site
         await page.getByRole('button', {name: 'Room settings'}).click();
@@ -218,7 +222,9 @@ test.describe('Create Room (R3)', () => {
         await page.getByRole('button', {name: 'Create room'}).click();
         
         // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.getByRole('heading', { name: 'a'.repeat(60) })).toBeVisible();
+        await expect(page.locator('.room-top').getByRole('heading', { name: roomName, exact: true })).toBeVisible();
+        // or by level
+        await expect(page.getByRole('heading', { level: 1, name: roomName, exact: true })).toBeVisible();
 
         // will need to close the room to not exceed the limit of total available rooms on site
         await page.getByRole('button', {name: 'Room settings'}).click();
@@ -248,10 +254,44 @@ test.describe('Create Room (R3)', () => {
         await page.getByRole('button', {name: 'Create room'}).click();
 
         // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
+        await expect(page.locator('.room-top').getByRole('heading', { name: roomName, exact: true })).toBeVisible();
+        // or by level
+        await expect(page.getByRole('heading', { level: 1, name: roomName, exact: true })).toBeVisible();
 
         // verify that the user name was shortened to 30 characters
         await expect(page.locator('.participant.is-you .player-name')).toHaveText('1234567890'.repeat(3));
+
+        // will need to close the room to not exceed the limit of total available rooms on site
+        await page.getByRole('button', {name: 'Room settings'}).click();
+        await page.getByRole('button', {name: 'Close this room' }).click();
+        await page.getByRole('button', {name: 'Close room'}).click();
+
+        await expect(page).toHaveURL('https://agilepokerboard.com/');
+    });
+
+    test('Room name with 1 character', async ({page}) => {
+        // expected result: room is created successfully
+        const roomName = 't';
+        const userName = 'Preston Smith';
+        
+        await page.getByLabel('Room Name').fill(roomName);
+        await page.getByLabel('Your display name').fill(userName);
+
+        const question = page.locator('.captcha-question');
+        await expect(question).toContainText('=');
+
+        const text = await question.innerText(); // "5 + 8 = ?"
+        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
+
+        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
+        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
+
+        await page.getByRole('button', {name: 'Create room'}).click();
+
+        // verify that the room was created successfully by checking for the room name in the heading
+        await expect(page.locator('.room-top').getByRole('heading', { name: roomName, exact: true })).toBeVisible();
+        // or by level
+        await expect(page.getByRole('heading', { level: 1, name: roomName, exact: true })).toBeVisible();
 
         // will need to close the room to not exceed the limit of total available rooms on site
         await page.getByRole('button', {name: 'Room settings'}).click();
