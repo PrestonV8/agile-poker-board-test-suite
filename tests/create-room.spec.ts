@@ -231,7 +231,7 @@ test.describe('Create Room (R3)', () => {
     test('User name is more than 30 characters', async ({page}) => {
         // expected result: room is created with a shortened user name (30 characters)
         const roomName = 'Test Room 4';
-        const userName = 'abcdefghijabcdefghijabcdefghijXYZ';
+        const userName = '1234567890'.repeat(20); // should create a user name that is 200 characters long
 
         await page.getByLabel('Room Name').fill(roomName);
         await page.getByLabel('Your display name').fill(userName);
@@ -251,7 +251,7 @@ test.describe('Create Room (R3)', () => {
         await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
 
         // verify that the user name was shortened to 30 characters
-        await expect(page.locator('.participant.is-you .player-name')).toHaveText('abcdefghijabcdefghijabcdefghij');
+        await expect(page.locator('.participant.is-you .player-name')).toHaveText('1234567890'.repeat(3));
 
         // will need to close the room to not exceed the limit of total available rooms on site
         await page.getByRole('button', {name: 'Room settings'}).click();
