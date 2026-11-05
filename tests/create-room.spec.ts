@@ -139,4 +139,92 @@ test.describe('Create Room (R3)', () => {
         await expect(page.getByRole('alert')).toHaveText('Please use 1–60 characters.');
     });
 
+    test('Leading and trailing whitespace', async ({page}) => {
+        // expected result: room is created successfully
+        const roomName = '    Test Room 2    ';
+        const userName = 'Preston Smith';
+
+        await page.getByLabel('Room Name').fill(roomName);
+        await page.getByLabel('Your display name').fill(userName);
+
+        const question = page.locator('.captcha-question');
+        await expect(question).toContainText('=');
+
+        const text = await question.innerText(); // "5 + 8 = ?"
+        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
+
+        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
+        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
+
+        await page.getByRole('button', {name: 'Create room'}).click();
+        
+        // verify that the room was created successfully by checking for the room name in the heading
+        await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
+
+        // will need to close the room to not exceed the limit of total available rooms on site
+        await page.getByRole('button', {name: 'Room settings'}).click();
+        await page.getByRole('button', {name: 'Close this room' }).click();
+        await page.getByRole('button', {name: 'Close room'}).click();
+
+        await expect(page).toHaveURL('https://agilepokerboard.com/');
+    });
+
+    test('Room name with exactly 60 characters', async ({page}) => {
+        // epected result: room is created successfully
+        const roomName = 'a'.repeat(60);
+        const userName = 'Preston Smith';
+
+        await page.getByLabel('Room Name').fill(roomName);
+        await page.getByLabel('Your display name').fill(userName);
+
+        const question = page.locator('.captcha-question');
+        await expect(question).toContainText('=');
+
+        const text = await question.innerText(); // "5 + 8 = ?"
+        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
+
+        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
+        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
+
+        await page.getByRole('button', {name: 'Create room'}).click();
+        
+        // verify that the room was created successfully by checking for the room name in the heading
+        await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
+
+        // will need to close the room to not exceed the limit of total available rooms on site
+        await page.getByRole('button', {name: 'Room settings'}).click();
+        await page.getByRole('button', {name: 'Close this room' }).click();
+        await page.getByRole('button', {name: 'Close room'}).click();
+
+        await expect(page).toHaveURL('https://agilepokerboard.com/');
+    });
+
+    test('Room with more than 60 characters', async ({page}) => {
+        const roomName = 'a'.repeat(61) + ' Test Room 3';
+        const userName = 'Preston Smith';
+
+        await page.getByLabel('Room Name').fill(roomName);
+        await page.getByLabel('Your display name').fill(userName);
+
+        const question = page.locator('.captcha-question');
+        await expect(question).toContainText('=');
+
+        const text = await question.innerText(); // "5 + 8 = ?"
+        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
+
+        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
+        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
+
+        await page.getByRole('button', {name: 'Create room'}).click();
+        
+        // verify that the room was created successfully by checking for the room name in the heading
+        await expect(page.getByRole('heading', { name: 'a'.repeat(60) })).toBeVisible();
+
+        // will need to close the room to not exceed the limit of total available rooms on site
+        await page.getByRole('button', {name: 'Room settings'}).click();
+        await page.getByRole('button', {name: 'Close this room' }).click();
+        await page.getByRole('button', {name: 'Close room'}).click();
+
+        await expect(page).toHaveURL('https://agilepokerboard.com/');
+    });
 });
