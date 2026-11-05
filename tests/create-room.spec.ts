@@ -92,6 +92,29 @@ test.describe('Create Room (R3)', () => {
         await expect(page).toHaveURL('https://agilepokerboard.com/');
     });
 
+    test('Empty room name: the Create room button stays disabled', async ({page}) => {
+        // expect result: alert message should appear instead of creating a room
+        const userName = 'Preston Smith';
+
+        await page.getByLabel('Your display name').fill(userName);
+
+        const question = page.locator('.captcha-question');
+        await expect(question).toContainText('=');
+
+        const text = await question.innerText(); // "5 + 8 = ?"
+        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
+
+        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
+        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
+        await page.getByRole('button', {name: 'Create room'}).click();
+
+        await expect(page.locator('#room-name:invalid')).toHaveCount(1);
+        await expect(page.getByLabel('Room name')).toHaveJSProperty(
+            'validity.valueMissing', true
+        );
+        await expect(page).toHaveURL('https://agilepokerboard.com/');
+    });
+
     test('Whitespace-only room name', async ({page}) => {
         // expected result: error message is playerd "Please use 1-60 characters"
         const roomName = '    ';
