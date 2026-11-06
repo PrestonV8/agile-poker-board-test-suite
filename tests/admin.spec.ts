@@ -18,4 +18,13 @@ test.describe('Admin (R13', () => {
         await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
         await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
     });
+    
+    test('Admin fails to log in with incorrect password', async ({page}) => {
+        const incorrectPassword = 'wrongpassword';
+        await page.getByLabel('Admin password').fill(incorrectPassword);
+        await page.getByRole('button', {name: 'Unlock administration'}).click();
+
+        await expect(page.getByRole('alert')).toBeVisible();
+        await expect(page.getByRole('alert')).toHaveText('Incorrect admin password.');
+    });
 });
