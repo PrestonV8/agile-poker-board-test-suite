@@ -98,9 +98,50 @@ test.describe('Admin (R13)', () => {
         //await expect(page.getByText(/Currently \d+ of 2 rooms in use/)).toBeVisible();
     });
 
+    // test for submitting an empty room limit
+    test('Not submitting as an empty room limit', async ({page}) => {
+        const roomLimit = '';
+
+        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
+        await page.getByRole('button', {name: 'Unlock administration'}).click();
+        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
+        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
+        
+        const limit = await page.getByLabel(/maximum active rooms/i);
+        limit.fill(roomLimit);
+        await page.getByRole('button', {name: 'Save room limit'}).click();
+
+        await expect(limit).toHaveJSProperty('validity.valueMissing', true);
+    });
+
+    // test for submitting whitespace into room limit
+    test('Submitting whitespace as room limit', async ({page}) => {
+        const roomLimit = '    ';
+
+        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
+        await page.getByRole('button', {name: 'Unlock administration'}).click();
+        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
+        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
+        
+        const limit = await page.getByLabel(/maximum active rooms/i);
+        limit.fill(roomLimit);
+        await page.getByRole('button', {name: 'Save room limit'}).click();
+
+        await expect(limit).toHaveJSProperty('validity.valueMissing', true);
+    });
+
     // test for invalid value (letters)
     test('Letters are inputted in room limit', async ({page}) => {
+        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
+        await page.getByRole('button', {name: 'Unlock administration'}).click();
+        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
+        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
         
+        const limit = await page.getByLabel(/maximum active rooms/i);
+        await limit.clear();
+        await limit.pressSequentially('qwertyuiopasdfghjklzxcvbnm');
+
+        await expect(limit).toHaveValue('');
     });
 
     // test for invalid value (special characters)
