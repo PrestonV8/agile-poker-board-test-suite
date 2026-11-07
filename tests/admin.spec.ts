@@ -81,8 +81,27 @@ test.describe('Admin (R13)', () => {
     });
 
     // test for invalid value (negative number)
+    test('Setting room value to negative number', async ({page}) => {
+        const roomLimit = '-1';
+
+        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
+        await page.getByRole('button', {name: 'Unlock administration'}).click();
+        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
+        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
+        
+        const limit = await page.getByLabel(/maximum active rooms/i);
+        limit.fill(roomLimit);
+        await page.getByRole('button', {name: 'Save room limit'}).click();
+
+        await expect(limit).toHaveJSProperty('validity.rangeUnderflow', true);
+        // check that nothing has been saved
+        //await expect(page.getByText(/Currently \d+ of 2 rooms in use/)).toBeVisible();
+    });
 
     // test for invalid value (letters)
+    test('Letters are inputted in room limit', async ({page}) => {
+        
+    });
 
     // test for invalid value (special characters)
 });
