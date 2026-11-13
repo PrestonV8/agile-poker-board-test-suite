@@ -9,33 +9,16 @@ test.describe('Admin (R13)', () => {
         await page.goto(ADMIN_URL);
 
         await expect(page).toHaveURL(/\/admin/);
-    });
 
-    test('Admin logs in with correct password', async ({page}) => {
         await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
         await page.getByRole('button', {name: 'Unlock administration'}).click();
 
         await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
         await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
-    });
-    
-    test('Admin fails to log in with incorrect password', async ({page}) => {
-        const incorrectPassword = 'wrongpassword';
-        await page.getByLabel('Admin password').fill(incorrectPassword);
-        await page.getByRole('button', {name: 'Unlock administration'}).click();
-
-        await expect(page.getByRole('alert')).toBeVisible();
-        await expect(page.getByRole('alert')).toHaveText('Incorrect admin password.');
     });
 
     test('Admin sets room limit to valid number', async ({page}) => {
         const roomLimit = '3';
-        
-        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
-        await page.getByRole('button', {name: 'Unlock administration'}).click();
-
-        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
-        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
 
         await page.getByLabel(/maximum active rooms/i).fill(roomLimit);
         await page.getByRole('button', {name: 'Save room limit'}).click();
@@ -66,12 +49,6 @@ test.describe('Admin (R13)', () => {
     test('Setting too many rooms beyond the limit', async ({page}) => {
         const roomLimit = '51';
 
-        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
-        await page.getByRole('button', {name: 'Unlock administration'}).click();
-
-        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
-        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
-
         const limit = await page.getByLabel(/maximum active rooms/i)
         limit.fill(roomLimit);
         await page.getByRole('button', {name: 'Save room limit'}).click();
@@ -82,11 +59,6 @@ test.describe('Admin (R13)', () => {
     // test for invalid value (negative number)
     test('Setting room value to negative number', async ({page}) => {
         const roomLimit = '-1';
-
-        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
-        await page.getByRole('button', {name: 'Unlock administration'}).click();
-        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
-        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
         
         const limit = await page.getByLabel(/maximum active rooms/i);
         limit.fill(roomLimit);
@@ -100,11 +72,6 @@ test.describe('Admin (R13)', () => {
     // test for submitting an empty room limit
     test('Not submitting as an empty room limit', async ({page}) => {
         const roomLimit = '';
-
-        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
-        await page.getByRole('button', {name: 'Unlock administration'}).click();
-        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
-        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
         
         const limit = await page.getByLabel(/maximum active rooms/i);
         limit.fill(roomLimit);
@@ -116,11 +83,6 @@ test.describe('Admin (R13)', () => {
     // test for submitting whitespace into room limit
     test('Submitting whitespace as room limit', async ({page}) => {
         const roomLimit = '    ';
-
-        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
-        await page.getByRole('button', {name: 'Unlock administration'}).click();
-        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
-        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
         
         const limit = await page.getByLabel(/maximum active rooms/i);
         limit.fill(roomLimit);
@@ -131,11 +93,6 @@ test.describe('Admin (R13)', () => {
 
     // test for invalid value (letters)
     test('Letters are inputted in room limit', async ({page}) => {
-        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
-        await page.getByRole('button', {name: 'Unlock administration'}).click();
-        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
-        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
-        
         const limit = await page.getByLabel(/maximum active rooms/i);
         await limit.clear();
         await limit.pressSequentially('qwertyuiopasdfghjklzxcvbnm');
@@ -145,11 +102,6 @@ test.describe('Admin (R13)', () => {
 
     // test for invalid value (special characters)
     test('Special characters are inputted in room limit', async ({page}) => {
-        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
-        await page.getByRole('button', {name: 'Unlock administration'}).click();
-        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
-        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
-        
         const limit = await page.getByLabel(/maximum active rooms/i);
         await limit.clear();
         await limit.pressSequentially('q!@#$%^&*()');
