@@ -50,7 +50,6 @@ test.describe('Create Room (R3)', () => {
         await page.getByPlaceholder('2-digit PIN').fill(pinValue);
         await page.getByRole('button', {name: /enter room/i }).click();
 
-
         // verify that the room was created successfully by checking for the room name in the heading
         await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
     });
