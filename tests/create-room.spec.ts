@@ -6,12 +6,20 @@ test.describe('Create Room (R3)', () => {
     });
 
     test.afterEach(async ({ page }) => {
-    const settings = page.getByRole('button', { name: 'Room settings' });
-    if (await settings.isVisible()) {
-        await settings.click();
-        await page.getByRole('button', { name: 'Close this room' }).click();
-        await page.getByRole('button', { name: 'Close room' }).click();
+    const settings = page.getByRole('button', { name: 'Room settings'});
+
+    // wait for the room appear; if it still doesn't exist, then don't clean up
+    try {
+        await settings.waitFor({ state: 'visible', timeout: 3000})
+    } catch {
+        return;
     }
+
+    await settings.click();
+    await page.getByRole('button', {name: 'Close this room' }).click();
+    await page.getByRole('button', {name: 'Close room'}).click();
+
+    await expect(page.getByRole('button', { name: 'Create room'})).toBeVisible();
 });
 
     test('Successfully create a room with valid names', async ({page}) => {
@@ -32,9 +40,19 @@ test.describe('Create Room (R3)', () => {
 
         await page.getByRole('button', {name: 'Create room'}).click();
 
+        // entering the PIN page
+        await expect(page.getByTitle(/Enter your PIN./));
+        const pin = page.locator('.pin-display strong');
+
+        await expect(pin).toBeVisible();
+        const pinValue = (await pin.textContent())?.trim() ?? '';
+
+        await page.getByPlaceholder('2-digit PIN').fill(pinValue);
+        await page.getByRole('button', {name: /enter room/i }).click();
+
+
         // verify that the room was created successfully by checking for the room name in the heading
         await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
-
     });
 
     test('Create a room with digits only in the room name', async ({page}) => {
