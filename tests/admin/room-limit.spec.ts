@@ -180,7 +180,7 @@ test.describe('Admin: maximum active rooms', () => {
   // TC-19
   test('shows the label, helper text and correct range', async ({ page }) => {
     await expect(roomsInput(page)).toBeVisible();
-    await expect(page.getByText(/lowering the limit won't close existing rooms/i)).toBeVisible();
+    await expect(page.getByText(/Lowering the limit won’t close existing rooms. New rooms stay blocked until usage drops below your limit./i)).toBeVisible();
     await expect(roomsInput(page)).toHaveAttribute('min', '1');
     await expect(roomsInput(page)).toHaveAttribute('max', '50');
   });
