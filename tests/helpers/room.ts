@@ -28,3 +28,10 @@ export async function createRoom(page: Page, roomName: string, userName: string)
     // verify that the room was created successfully by checking for the room name in the heading
     await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
 }
+
+export async function closeRoom(page: Page) {
+    // this is assuming that you are in the current created room after room creation
+    await page.getByRole('button', {name: 'Room settings'}).click();
+    await page.getByRole('button', {name: 'Close this room'}).click();
+    await page.getByRole('button', {name: 'Close room'}).click();
+}

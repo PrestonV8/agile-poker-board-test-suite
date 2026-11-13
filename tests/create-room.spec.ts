@@ -1,4 +1,5 @@
 import {test, expect} from '@playwright/test';
+import { createRoom, closeRoom } from './helpers/room';
 
 test.describe('Create Room (R3)', () => {
     test.beforeEach(async ({page}) => {
@@ -20,82 +21,28 @@ test.describe('Create Room (R3)', () => {
     await page.getByRole('button', {name: 'Close room'}).click();
 
     await expect(page.getByRole('button', { name: 'Create room'})).toBeVisible();
-});
+    });
+
+    test.afterEach(async ({ page }) => {
+        closeRoom(page);
+    });
 
     test('Successfully create a room with valid names', async ({page}) => {
         const roomName = 'Test Room 1';
         const userName = 'Preston Smith';
-        
-        await page.getByLabel('Room Name').fill(roomName);
-        await page.getByLabel('Your display name').fill(userName);
-
-        const question = page.locator('.captcha-question');
-        await expect(question).toContainText('=');
-
-        const text = await question.innerText(); // "5 + 8 = ?"
-        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
-
-        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
-        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
-
-        await page.getByRole('button', {name: 'Create room'}).click();
-
-        // entering the PIN page
-        await expect(page.getByTitle(/Enter your PIN./));
-        const pin = page.locator('.pin-display strong');
-
-        await expect(pin).toBeVisible();
-        const pinValue = (await pin.textContent())?.trim() ?? '';
-
-        await page.getByPlaceholder('2-digit PIN').fill(pinValue);
-        await page.getByRole('button', {name: /enter room/i }).click();
-
-        // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
+        createRoom(page, roomName, userName);
     });
 
     test('Create a room with digits only in the room name', async ({page}) => {
         const roomName = '1234567890';
         const userName = 'Preston Smith';
-
-        await page.getByLabel('Room Name').fill(roomName);
-        await page.getByLabel('Your display name').fill(userName);
-
-        const question = page.locator('.captcha-question');
-        await expect(question).toContainText('=');
-
-        const text = await question.innerText(); // "5 + 8 = ?"
-        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
-
-        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
-        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
-
-        await page.getByRole('button', {name: 'Create room'}).click();
-
-        // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
+        createRoom(page, roomName, userName);
     });
 
     test('Create a room with only special characters', async ({page}) => {
         const roomName = '!@#$%^&*()_+';
         const userName = 'Preston Smith';
-
-        await page.getByLabel('Room Name').fill(roomName);
-        await page.getByLabel('Your display name').fill(userName);
-
-        const question = page.locator('.captcha-question');
-        await expect(question).toContainText('=');
-
-        const text = await question.innerText(); // "5 + 8 = ?"
-        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
-
-        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
-        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
-
-        await page.getByRole('button', {name: 'Create room'}).click();
-
-        // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
+        createRoom(page, roomName, userName);
     });
 
     test('Empty room name: the Create room button stays disabled', async ({page}) => {
