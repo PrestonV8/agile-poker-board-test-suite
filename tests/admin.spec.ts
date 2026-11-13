@@ -145,4 +145,16 @@ test.describe('Admin (R13)', () => {
     });
 
     // test for invalid value (special characters)
+    test('Special characters are inputted in room limit', async ({page}) => {
+        await page.getByLabel('Admin password').fill(ADMIN_PASSWORD);
+        await page.getByRole('button', {name: 'Unlock administration'}).click();
+        await expect(page.getByText('GLOBAL ADMINISTRATION')).toBeVisible();
+        await expect(page.getByRole('button', {name: 'Lock admin view'})).toBeVisible();
+        
+        const limit = await page.getByLabel(/maximum active rooms/i);
+        await limit.clear();
+        await limit.pressSequentially('q!@#$%^&*()');
+
+        await expect(limit).toHaveValue('');
+    })
 });
