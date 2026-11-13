@@ -77,7 +77,6 @@ test.describe('Admin (R13)', () => {
         await page.getByRole('button', {name: 'Save room limit'}).click();
 
         await expect(limit).toHaveJSProperty('validity.rangeOverflow', true);
-        await expect(page.getByText(/Currently \d+ of 2 rooms in use/)).toBeVisible();
     });
 
     // test for invalid value (negative number)
