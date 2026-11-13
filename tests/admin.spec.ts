@@ -108,4 +108,14 @@ test.describe('Admin (R13)', () => {
 
         await expect(limit).toHaveValue('');
     })
+
+    // positive test: valid idel minutes before close
+
+    // negative test: inputting a negative number in idle minutes
+
+    // negative test: inputting 0 in idle minutes
+    
+    // negative test: inputting a letter in idle minutes
+
+    // negative
 });
