@@ -7,23 +7,6 @@ test.describe('Create Room (R3)', () => {
     });
 
     test.afterEach(async ({ page }) => {
-    const settings = page.getByRole('button', { name: 'Room settings'});
-
-    // wait for the room appear; if it still doesn't exist, then don't clean up
-    try {
-        await settings.waitFor({ state: 'visible', timeout: 3000})
-    } catch {
-        return;
-    }
-
-    await settings.click();
-    await page.getByRole('button', {name: 'Close this room' }).click();
-    await page.getByRole('button', {name: 'Close room'}).click();
-
-    await expect(page.getByRole('button', { name: 'Create room'})).toBeVisible();
-    });
-
-    test.afterEach(async ({ page }) => {
         closeRoom(page);
     });
 
@@ -98,74 +81,21 @@ test.describe('Create Room (R3)', () => {
         // expected result: room is created successfully
         const roomName = '    Test Room 2    ';
         const userName = 'Preston Smith';
-
-        await page.getByLabel('Room Name').fill(roomName);
-        await page.getByLabel('Your display name').fill(userName);
-
-        const question = page.locator('.captcha-question');
-        await expect(question).toContainText('=');
-
-        const text = await question.innerText(); // "5 + 8 = ?"
-        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
-
-        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
-        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
-
-        await page.getByRole('button', {name: 'Create room'}).click();
-        
-        // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.locator('.room-top').getByRole('heading', { name: roomName, exact: true })).toBeVisible();
-        // or by level
-        await expect(page.getByRole('heading', { level: 1, name: roomName, exact: true })).toBeVisible();
+        createRoom(page, roomName, userName);
     });
 
     test('Room name with exactly 60 characters', async ({page}) => {
         // epected result: room is created successfully
         const roomName = 'a'.repeat(60);
         const userName = 'Preston Smith';
-
-        await page.getByLabel('Room Name').fill(roomName);
-        await page.getByLabel('Your display name').fill(userName);
-
-        const question = page.locator('.captcha-question');
-        await expect(question).toContainText('=');
-
-        const text = await question.innerText(); // "5 + 8 = ?"
-        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
-
-        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
-        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
-
-        await page.getByRole('button', {name: 'Create room'}).click();
-        
-        // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.locator('.room-top').getByRole('heading', { name: roomName, exact: true })).toBeVisible();
-        // or by level
-        await expect(page.getByRole('heading', { level: 1, name: roomName, exact: true })).toBeVisible();
+        createRoom(page, roomName, userName);
     });
 
     test('Room with more than 60 characters', async ({page}) => {
+        // expected result: room is created successfully
         const roomName = 'a'.repeat(61) + ' Test Room 3';
         const userName = 'Preston Smith';
-
-        await page.getByLabel('Room Name').fill(roomName);
-        await page.getByLabel('Your display name').fill(userName);
-
-        const question = page.locator('.captcha-question');
-        await expect(question).toContainText('=');
-
-        const text = await question.innerText(); // "5 + 8 = ?"
-        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
-
-        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
-        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
-
-        await page.getByRole('button', {name: 'Create room'}).click();
-        
-        // verify that the room was created successfully by checking for the room name in the heading
-        await expect(page.locator('.room-top').getByRole('heading', { name: roomName, exact: true })).toBeVisible();
-        // or by level
-        await expect(page.getByRole('heading', { level: 1, name: roomName, exact: true })).toBeVisible();
+        createRoom(page, roomName, userName);
     });
 
     test('User name is more than 30 characters', async ({page}) => {
