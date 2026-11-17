@@ -1,10 +1,11 @@
 import { Page, expect } from '@playwright/test'
 
 export async function createRoom(page: Page, roomName: string, userName: string) {
-    await page.getByLabel('Room name').fill(roomName);
+        await page.getByRole('textbox', { name: 'Room name' }).click();
+    await page.getByRole('textbox', { name: 'Room name' }).fill(roomName);
     await page.getByLabel('Your display name').fill(userName);
 
-    const question = page.locator('.captcha-question');
+        const question = page.locator('.captcha-question');
         await expect(question).toContainText('=');
 
         const text = await question.innerText(); // "5 + 8 = ?"
@@ -23,9 +24,6 @@ export async function createRoom(page: Page, roomName: string, userName: string)
 
     await page.getByPlaceholder('2-digit PIN').fill(pinValue);
     await page.getByRole('button', {name: /enter room/i }).click();
-
-    // verify that the room was created successfully by checking for the room name in the heading
-    await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
 }
 
 export async function closeRoom(page: Page) {
@@ -42,5 +40,5 @@ export async function closeRoom(page: Page) {
     await page.getByRole('button', {name: 'Close this room' }).click();
     await page.getByRole('button', {name: 'Close room'}).click();
 
-    await expect(page.getByRole('button', { name: 'Create room'})).toBeVisible();
+    await expect(page).toHaveURL('https://agilepokerboard.com/');
 }

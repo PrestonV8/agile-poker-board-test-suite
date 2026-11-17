@@ -7,14 +7,16 @@ test.describe('Create Room (R3)', () => {
     });
 
     test.afterEach(async ({ page }) => {
-        closeRoom(page);
+        await closeRoom(page);
     });
 
     test('Successfully create a room with valid names', async ({page}) => {
         const roomName = 'Test Room 1';
         const userName = 'Preston Smith';
-        createRoom(page, roomName, userName);
+        await createRoom(page, roomName, userName);
     });
+
+
 
     test('Create a room with digits only in the room name', async ({page}) => {
         const roomName = '1234567890';
