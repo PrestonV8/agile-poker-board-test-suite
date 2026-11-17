@@ -94,7 +94,7 @@ test.describe('Create Room (R3)', () => {
 
         // check if the warning message apears on the page
         await expect(page.getByRole('alert')).toBeVisible();
-        await expect(page.getByRole('alert')).toHaveText('Please use 1–60 characters.');
+        await expect(page.getByRole('alert')).toHaveText('Please use 1–100 characters.');
 
         await expect(page).toHaveURL('https://agilepokerboard.com/');
     });
@@ -106,16 +106,16 @@ test.describe('Create Room (R3)', () => {
         await createRoom(page, roomName, userName);
     });
 
-    test('Room name with exactly 60 characters', async ({page}) => {
+    test('Room name with exactly 100 characters', async ({page}) => {
         // epected result: room is created successfully
-        const roomName = 'a'.repeat(60);
+        const roomName = 'a'.repeat(100);
         const userName = 'Preston Smith';
         await createRoom(page, roomName, userName);
     });
 
     test('Room with more than 60 characters', async ({page}) => {
         // expected result: room is created successfully
-        const roomName = 'a'.repeat(61) + ' Test Room 3';
+        const roomName = 'a'.repeat(255) + ' Test Room 3';
         const userName = 'Preston Smith';
         await createRoom(page, roomName, userName);
     });
