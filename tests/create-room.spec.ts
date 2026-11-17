@@ -21,13 +21,33 @@ test.describe('Create Room (R3)', () => {
     test('Create a room with digits only in the room name', async ({page}) => {
         const roomName = '1234567890';
         const userName = 'Preston Smith';
-        createRoom(page, roomName, userName);
+        await createRoom(page, roomName, userName);
     });
 
     test('Create a room with only special characters', async ({page}) => {
+        // expected result: javascript error message should appear
         const roomName = '!@#$%^&*()_+';
         const userName = 'Preston Smith';
-        createRoom(page, roomName, userName);
+        
+        await page.getByLabel('Room name').fill(roomName);
+        await page.getByLabel('Your display name').fill(userName);
+
+        const question = page.locator('.captcha-question');
+        await expect(question).toContainText('=');
+
+        const text = await question.innerText(); // "5 + 8 = ?"
+        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
+
+        await page.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
+        await expect(page.getByRole('button', { name: 'Create room' })).toBeEnabled();
+        await page.getByRole('button', {name: 'Create room'}).click();
+
+        await expect(page.locator('#room-name:invalid')).toHaveCount(1);
+        await expect(page.getByLabel('Room name')).toHaveJSProperty(
+            'validity.patternMismatch', true
+        );
+
+        await expect(page).toHaveURL('https://agilepokerboard.com/');
     });
 
     test('Empty room name: the Create room button stays disabled', async ({page}) => {
@@ -83,21 +103,21 @@ test.describe('Create Room (R3)', () => {
         // expected result: room is created successfully
         const roomName = '    Test Room 2    ';
         const userName = 'Preston Smith';
-        createRoom(page, roomName, userName);
+        await createRoom(page, roomName, userName);
     });
 
     test('Room name with exactly 60 characters', async ({page}) => {
         // epected result: room is created successfully
         const roomName = 'a'.repeat(60);
         const userName = 'Preston Smith';
-        createRoom(page, roomName, userName);
+        await createRoom(page, roomName, userName);
     });
 
     test('Room with more than 60 characters', async ({page}) => {
         // expected result: room is created successfully
         const roomName = 'a'.repeat(61) + ' Test Room 3';
         const userName = 'Preston Smith';
-        createRoom(page, roomName, userName);
+        await createRoom(page, roomName, userName);
     });
 
     test('User name is more than 30 characters', async ({page}) => {
