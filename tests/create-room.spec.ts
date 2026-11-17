@@ -11,7 +11,7 @@ test.describe('Create Room (R3)', () => {
     });
 
     test('Successfully create a room with valid names', async ({page}) => {
-        const roomName = 'Test Room 1';
+        const roomName = 'Positive test room';
         const userName = 'Preston Smith';
         await createRoom(page, roomName, userName);
     });
@@ -101,7 +101,7 @@ test.describe('Create Room (R3)', () => {
 
     test('Leading and trailing whitespace', async ({page}) => {
         // expected result: room is created successfully
-        const roomName = '    Test Room 2    ';
+        const roomName = '    Positive test room 2    ';
         const userName = 'Preston Smith';
         await createRoom(page, roomName, userName);
     });
@@ -115,7 +115,7 @@ test.describe('Create Room (R3)', () => {
 
     test('Room with more than 60 characters', async ({page}) => {
         // expected result: room is created successfully
-        const roomName = 'a'.repeat(255) + ' Test Room 3';
+        const roomName = 'a'.repeat(255) + ' Positive test room 3';
         const userName = 'Preston Smith';
         await createRoom(page, roomName, userName);
     });
