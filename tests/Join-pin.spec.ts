@@ -1,10 +1,39 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { createRoom, closeRoom } from './helpers/room';
 
+const ROOM_NAME = 'Join Room Test Environment';
+const SCRUM_MASTER = 'Preston Smith';
+const MEMBER = 'Kevin Kyle';
+
 test.describe('Join PIN (R18)', () => {
-    test.beforeAll(async ({page}) => {
-        const roomName = 'Join Room Test';
-        const userName = 'Preston Smith';
+    let pin : string;
+
+    test.beforeAll(async ({ browser }) => {
+        const hostPage = await browser.newPage();
+
+        await hostPage.getByRole('textbox', { name: 'Room name' }).click();
+        await hostPage.getByRole('textbox', { name: 'Room name' }).fill(roomName);
+        await hostPage.getByLabel('Your display name').fill(userName);
+
+        const question = hostPage.locator('.captcha-question');
+        await expect(question).toContainText('=');
+
+        const text = await question.innerText(); // "5 + 8 = ?"
+        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
+
+        await hostPage.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
+        await expect(hostPage.getByRole('button', { name: 'Create room' })).toBeEnabled();
+        await hostPage.getByRole('button', {name: 'Create room'}).click();
+
+        // entering the PIN page
+        await expect(hostPage.getByTitle(/Enter your PIN./));
+        pin = hostPage.locator('.pin-display strong');
+
+        await expect(pin).toBeVisible();
+        const pinValue = (await pin.textContent())?.trim() ?? '';
+
+        await hostPage.getByPlaceholder('2-digit PIN').fill(pinValue);
+        await hostPage.getByRole('button', {name: /enter room/i }).click();
     });
 
     test.describe(' as scrum master', () => {
