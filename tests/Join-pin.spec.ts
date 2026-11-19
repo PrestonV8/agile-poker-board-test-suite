@@ -6,34 +6,21 @@ const SCRUM_MASTER = 'Preston Smith';
 const MEMBER = 'Kevin Kyle';
 
 test.describe('Join PIN (R18)', () => {
-    let pin : string;
+    test.describe.configure({ mode: 'serial'});
+
+    let pin: string;
+    let hostPage: Page;
 
     test.beforeAll(async ({ browser }) => {
-        const hostPage = await browser.newPage();
+        hostPage = await browser.newPage();
+        await hostPage.goto('/'); // assumes baseURL is set in playwright.config.ts
 
-        await hostPage.getByRole('textbox', { name: 'Room name' }).click();
-        await hostPage.getByRole('textbox', { name: 'Room name' }).fill(roomName);
-        await hostPage.getByLabel('Your display name').fill(userName);
+        pin = await createRoom(hostPage, ROOM_NAME, SCRUM_MASTER);
+    });
 
-        const question = hostPage.locator('.captcha-question');
-        await expect(question).toContainText('=');
-
-        const text = await question.innerText(); // "5 + 8 = ?"
-        const [, a, b] = text.match(/(\d+)\s*\+\s*(\d+)/)!;
-
-        await hostPage.getByLabel('Captcha answer').fill(String(Number(a) + Number(b)));
-        await expect(hostPage.getByRole('button', { name: 'Create room' })).toBeEnabled();
-        await hostPage.getByRole('button', {name: 'Create room'}).click();
-
-        // entering the PIN page
-        await expect(hostPage.getByTitle(/Enter your PIN./));
-        pin = hostPage.locator('.pin-display strong');
-
-        await expect(pin).toBeVisible();
-        const pinValue = (await pin.textContent())?.trim() ?? '';
-
-        await hostPage.getByPlaceholder('2-digit PIN').fill(pinValue);
-        await hostPage.getByRole('button', {name: /enter room/i }).click();
+    test.afterAll( async () => {
+        await closeRoom(hostPage);
+        await hostPage.close();
     });
 
     test.describe(' as scrum master', () => {
